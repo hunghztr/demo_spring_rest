@@ -48,4 +48,13 @@ public class UserService {
         }
         return null;
     }
+
+    public User fetchUserByName(String name) {
+        Optional<User> optional = userRepository.findByName(name);
+        if (optional.isPresent()) {
+            User user = optional.get();
+            return user;
+        }
+        return null;
+    }
 }

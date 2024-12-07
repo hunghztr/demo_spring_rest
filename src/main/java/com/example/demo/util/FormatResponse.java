@@ -28,7 +28,9 @@ public class FormatResponse implements ResponseBodyAdvice<Object> {
             ServerHttpResponse response) {
         ServletServerHttpResponse sResponse = (ServletServerHttpResponse) response;
         HttpStatus status = HttpStatus.valueOf(sResponse.getServletResponse().getStatus());
-
+        if (body instanceof String) {
+            return body;
+        }
         RestResponse<Object> rest = new RestResponse<>();
         rest.setStatus(status.value());
         if (status.value() >= 400) {
