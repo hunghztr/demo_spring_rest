@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
+import com.example.demo.domain.dto.StringDto;
 import com.example.demo.service.UserService;
 import com.example.demo.util.IdException;
 
@@ -28,11 +29,13 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<String> postCreateUser(@RequestBody User user) {
+    public ResponseEntity<StringDto> postCreateUser(@RequestBody User user) {
         String hash = passwordEncoder.encode(user.getPassword());
         user.setPassword(hash);
         userService.handleCreateUser(user);
-        return ResponseEntity.ok().body("create success");
+        StringDto stringDto = new StringDto();
+        stringDto.setResult("create success");
+        return ResponseEntity.ok().body(stringDto);
     }
 
     @GetMapping("/users")
@@ -51,15 +54,19 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<String> putUpdateUser(@PathVariable("id") long id, @RequestBody User user) {
+    public ResponseEntity<StringDto> putUpdateUser(@PathVariable("id") long id, @RequestBody User user) {
         userService.handleUpdateUser(user, id);
-        return ResponseEntity.ok().body("update success");
+        StringDto stringDto = new StringDto();
+        stringDto.setResult("update success");
+        return ResponseEntity.ok().body(stringDto);
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteRemoveUser(@PathVariable("id") long id) {
+    public ResponseEntity<StringDto> deleteRemoveUser(@PathVariable("id") long id) {
         userService.handleDeleteUser(id);
-        return ResponseEntity.ok().body("delete success");
+        StringDto stringDto = new StringDto();
+        stringDto.setResult("delete success");
+        return ResponseEntity.ok().body(stringDto);
     }
 
 }

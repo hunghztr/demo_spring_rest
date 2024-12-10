@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+	compileOnly ("org.projectlombok:lombok:1.18.16")
+    annotationProcessor ("org.projectlombok:lombok:1.18.16")
+	implementation ("com.nimbusds:nimbus-jose-jwt:9.31")
 	implementation ("org.springframework.boot:spring-boot-starter-security")
 	implementation ("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -31,3 +34,5 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+
