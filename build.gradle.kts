@@ -18,8 +18,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly ("org.projectlombok:lombok:1.18.16")
-    annotationProcessor ("org.projectlombok:lombok:1.18.16")
+	implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation ("com.nimbusds:nimbus-jose-jwt:9.31")
 	implementation ("org.springframework.boot:spring-boot-starter-security")
 	implementation ("org.springframework.boot:spring-boot-starter-validation")
