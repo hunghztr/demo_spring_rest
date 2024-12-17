@@ -18,6 +18,11 @@ repositories {
 }
 
 dependencies {
+	compileOnly ("org.projectlombok:lombok:1.18.36")
+	annotationProcessor ("org.projectlombok:lombok:1.18.36")
+	testCompileOnly ("org.projectlombok:lombok:1.18.36")
+	testAnnotationProcessor ("org.projectlombok:lombok:1.18.36")
+	implementation("com.turkraft.springfilter:jpa:3.1.7")
 	implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation ("com.nimbusds:nimbus-jose-jwt:9.31")
 	implementation ("org.springframework.boot:spring-boot-starter-security")

@@ -3,6 +3,9 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.User;
@@ -20,8 +23,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> fetchAllUsers() {
-        return userRepository.findAll();
+    public List<User> fetchAllUsers(Specification<User> spec, Pageable pageable) {
+        Page<User> pages = userRepository.findAll(spec, pageable);
+        List<User> users = pages.getContent();
+        return users;
     }
 
     public User handleUpdateUser(User user, long id) {

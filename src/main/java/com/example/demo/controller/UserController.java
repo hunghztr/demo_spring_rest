@@ -8,9 +8,12 @@ import com.example.demo.domain.User;
 import com.example.demo.domain.dto.StringDto;
 import com.example.demo.service.UserService;
 import com.example.demo.util.IdException;
+import com.turkraft.springfilter.boot.Filter;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getFetchAllUsers() {
-        List<User> users = userService.fetchAllUsers();
+    public ResponseEntity<List<User>> getFetchAllUsers(@Filter Specification<User> spec, Pageable pageable) {
+        List<User> users = userService.fetchAllUsers(spec, pageable);
         return ResponseEntity.ok().body(users);
     }
 
