@@ -2,12 +2,14 @@ package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
 import com.example.demo.domain.dto.StringDto;
 import com.example.demo.service.UserService;
 import com.example.demo.util.IdException;
+import com.example.demo.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
@@ -32,6 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    @ApiMessage(value = "Create User")
     public ResponseEntity<StringDto> postCreateUser(@RequestBody User user) {
         String hash = passwordEncoder.encode(user.getPassword());
         user.setPassword(hash);
@@ -42,12 +46,14 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @ApiMessage(value = "Fetch All Users")
     public ResponseEntity<List<User>> getFetchAllUsers(@Filter Specification<User> spec, Pageable pageable) {
         List<User> users = userService.fetchAllUsers(spec, pageable);
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping("/users/{id}")
+    @ApiMessage(value = "Fetch User By Id")
     public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdException {
         User user = userService.fetchUserById(id);
         if (user == null) {
@@ -57,6 +63,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
+    @ApiMessage(value = "Update User")
     public ResponseEntity<StringDto> putUpdateUser(@PathVariable("id") long id, @RequestBody User user) {
         userService.handleUpdateUser(user, id);
         StringDto stringDto = new StringDto();
@@ -65,6 +72,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
+    @ApiMessage(value = "Delete User")
     public ResponseEntity<StringDto> deleteRemoveUser(@PathVariable("id") long id) {
         userService.handleDeleteUser(id);
         StringDto stringDto = new StringDto();

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.example.demo.domain.dto.RestResponse;
+import com.example.demo.util.annotation.ApiMessage;
 
 @ControllerAdvice
 public class FormatResponse implements ResponseBodyAdvice<Object> {
@@ -36,7 +37,8 @@ public class FormatResponse implements ResponseBodyAdvice<Object> {
         if (status.value() >= 400) {
             return body;
         }
-        rest.setMess("execute success");
+        ApiMessage mess = returnType.getMethodAnnotation(ApiMessage.class);
+        rest.setMess(mess != null ? mess.value() : "");
         rest.setData(body);
         return rest;
     }
