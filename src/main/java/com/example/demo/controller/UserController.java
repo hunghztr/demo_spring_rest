@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
 import com.example.demo.domain.dto.StringDto;
+import com.example.demo.domain.dto.UserDto;
 import com.example.demo.service.UserService;
 import com.example.demo.util.IdException;
 import com.example.demo.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -36,7 +39,7 @@ public class UserController {
 
     @PostMapping("/users")
     @ApiMessage(value = "Create User")
-    public ResponseEntity<StringDto> postCreateUser(@RequestBody User user) {
+    public ResponseEntity<StringDto> postCreateUser(@Valid @RequestBody User user) {
         String hash = passwordEncoder.encode(user.getPassword());
         user.setPassword(hash);
         userService.handleCreateUser(user);
@@ -47,15 +50,15 @@ public class UserController {
 
     @GetMapping("/users")
     @ApiMessage(value = "Fetch All Users")
-    public ResponseEntity<List<User>> getFetchAllUsers(@Filter Specification<User> spec, Pageable pageable) {
-        List<User> users = userService.fetchAllUsers(spec, pageable);
+    public ResponseEntity<List<UserDto>> getFetchAllUsers(@Filter Specification<User> spec, Pageable pageable) {
+        List<UserDto> users = userService.fetchAllUsers(spec, pageable);
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping("/users/{id}")
     @ApiMessage(value = "Fetch User By Id")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdException {
-        User user = userService.fetchUserById(id);
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") long id) throws IdException {
+        UserDto user = userService.fetchUserById(id);
         if (user == null) {
             throw new IdException("người dùng không tồn tại");
         }
