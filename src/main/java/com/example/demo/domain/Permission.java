@@ -1,34 +1,34 @@
 package com.example.demo.domain;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "users")
-@Data
+@Table(name = "permissions")
 @NoArgsConstructor
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @NotBlank(message = "Name is required")
     String name;
-    @Size(min = 3, message = "Password must be at least 3 characters")
-    String password;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    Role role;
+    String api;
+    String module;
+    String method;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "permissions")
+    List<Role> roles;
 }
