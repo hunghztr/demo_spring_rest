@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
 import com.example.demo.domain.dto.StringDto;
 import com.example.demo.domain.dto.UserDto;
+import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
 import com.example.demo.util.IdException;
 import com.example.demo.util.annotation.ApiMessage;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +32,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
-    private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
-
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RoleService roleService;
 
     @PostMapping("/users")
     @ApiMessage(value = "Create User")
     public ResponseEntity<StringDto> postCreateUser(@Valid @RequestBody User user) {
         String hash = passwordEncoder.encode(user.getPassword());
         user.setPassword(hash);
+        Role role = roleService.fetchById(user.getRole().getId());
+        user.setRole(role);
         userService.handleCreateUser(user);
         StringDto stringDto = new StringDto();
         stringDto.setResult("create success");
@@ -68,6 +72,8 @@ public class UserController {
     @PutMapping("/users/{id}")
     @ApiMessage(value = "Update User")
     public ResponseEntity<StringDto> putUpdateUser(@PathVariable("id") long id, @RequestBody User user) {
+        Role role = roleService.fetchById(user.getRole().getId());
+        user.setRole(role);
         userService.handleUpdateUser(user, id);
         StringDto stringDto = new StringDto();
         stringDto.setResult("update success");

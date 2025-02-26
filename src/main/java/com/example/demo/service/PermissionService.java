@@ -24,4 +24,8 @@ public class PermissionService {
     public List<Permission> getAll() {
         return permissionRepository.findAll();
     }
+
+    public List<Permission> fetchAllByIds(List<Long> ids) {
+        return permissionRepository.findByIdIn(ids);
+    }
 }
