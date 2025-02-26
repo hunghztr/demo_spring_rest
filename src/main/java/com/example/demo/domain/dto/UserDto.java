@@ -9,5 +9,4 @@ import lombok.experimental.FieldDefaults;
 public class UserDto {
     long id;
     String name;
-    String role;
 }
