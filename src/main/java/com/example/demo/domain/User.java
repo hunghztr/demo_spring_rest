@@ -28,6 +28,7 @@ public class User {
     String name;
     @Size(min = 3, message = "Password must be at least 3 characters")
     String password;
+    String token;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     Role role;

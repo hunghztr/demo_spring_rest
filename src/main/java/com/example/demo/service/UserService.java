@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.User;
 import com.example.demo.domain.dto.UserDto;
 import com.example.demo.domain.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.util.SecurityUtil;
 
 @Service
 public class UserService {
@@ -21,6 +23,13 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private SecurityUtil securityUtil;
+
+    public boolean isExistByUsername(String username) {
+        return userRepository.existsByName(username);
+    }
 
     public User handleCreateUser(User user) {
         return userRepository.save(user);
@@ -70,5 +79,22 @@ public class UserService {
 
     public long countUser() {
         return userRepository.count();
+    }
+
+    public User updateToken(String name) {
+        User curUser = fetchUserByName(name);
+        String refreshToken = securityUtil.generateRefreshToken(curUser);
+        curUser.setToken(refreshToken);
+        curUser = handleUpdateUser(curUser, curUser.getId());
+        return curUser;
+    }
+
+    public ResponseCookie createCookie(String token, int maxAge) {
+        return ResponseCookie.from("refresh_token", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(maxAge)
+                .build();
     }
 }
