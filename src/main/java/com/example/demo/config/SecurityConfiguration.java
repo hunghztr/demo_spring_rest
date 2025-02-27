@@ -52,7 +52,7 @@ public class SecurityConfiguration {
         http
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login").permitAll()
+                        .requestMatchers("/", "/auth/login").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(j -> j.decoder(jwtDecoder())))
                 .formLogin(f -> f.disable())

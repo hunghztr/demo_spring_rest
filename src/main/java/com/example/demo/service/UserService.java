@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.User;
@@ -17,7 +19,10 @@ import com.example.demo.domain.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.SecurityUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -35,6 +40,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDto> fetchAllUsers(Specification<User> spec, Pageable pageable) {
         Page<User> pages = userRepository.findAll(spec, pageable);
         List<User> users = pages.getContent();
@@ -59,7 +65,9 @@ public class UserService {
         return userRepository.deleteById(id);
     }
 
+    @PostAuthorize("returnObject.name == authentication.name")
     public UserDto fetchUserById(long id) {
+        log.info("in method get by id");
         Optional<User> optional = userRepository.findById(id);
         if (optional.isPresent()) {
             User curUser = optional.get();
