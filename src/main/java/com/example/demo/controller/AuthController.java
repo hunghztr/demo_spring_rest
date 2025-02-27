@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,13 +73,17 @@ public class AuthController {
 
     @GetMapping("/auth/get-token")
     public ResponseEntity<StringDto> getToken(
-            @CookieValue(name = "refresh_token", defaultValue = "no_token") String token) {
+            @CookieValue(name = "refresh_token", defaultValue = "no_token") String token) throws IdException {
         if (token.equals("no_token")) {
             StringDto stringDto = new StringDto();
             stringDto.setResult("no token");
             return ResponseEntity.badRequest().body(stringDto);
         }
-        String username = SecurityUtil.getUsername();
+        Jwt decode = securityUtil.verifyToken(token);
+        if (decode == null) {
+            throw new IdException("token không hợp lệ");
+        }
+        String username = decode.getSubject();
         StringDto stringDto = new StringDto();
         User curUser = userService.updateToken(username);
         String accessToken = securityUtil.generateAccessToken(curUser);

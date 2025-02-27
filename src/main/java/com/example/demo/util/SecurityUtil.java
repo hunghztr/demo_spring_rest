@@ -5,9 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.Role;
@@ -87,5 +92,17 @@ public class SecurityUtil {
             return auth.getName();
         }
         return null;
+    }
+
+    public Jwt verifyToken(String token) {
+        byte[] key = Base64.getDecoder().decode(KEY);
+        SecretKeySpec spec = new SecretKeySpec(key, "HS256");
+        var decode = NimbusJwtDecoder.withSecretKey(spec).macAlgorithm(MacAlgorithm.HS256).build();
+        try {
+            return decode.decode(token);
+        } catch (Exception e) {
+            log.info("token invalid...");
+            return null;
+        }
     }
 }
