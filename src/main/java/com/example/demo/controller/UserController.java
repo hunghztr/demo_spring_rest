@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,5 +93,11 @@ public class UserController {
         stringDto.setResult("delete success");
         return ResponseEntity.ok().body(stringDto);
     }
-
+    @CacheEvict(value = "users", allEntries = true)
+    @GetMapping("/clear-cache")
+    public ResponseEntity<StringDto> deleteCache(){
+        StringDto stringDto = new StringDto();
+        stringDto.setResult("xóa cache thành công");
+        return ResponseEntity.ok().body(stringDto);
+    }
 }

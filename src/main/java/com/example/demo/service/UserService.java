@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +19,7 @@ import com.example.demo.domain.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.SecurityUtil;
 
+@Slf4j
 @Service
 public class UserService {
     @Autowired
@@ -35,7 +38,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Cacheable(value = "users",key = "#pageable.pageNumber+'_'+#pageable.pageSize" )
     public List<UserDto> fetchAllUsers(Specification<User> spec, Pageable pageable) {
+        System.out.println("fetch users");
         Page<User> pages = userRepository.findAll(spec, pageable);
         List<User> users = pages.getContent();
 
