@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+	implementation("com.google.code.gson:gson:2.13.1") // Hoặc phiên bản mới hơn
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation ("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	compileOnly ("org.projectlombok:lombok:1.18.36")

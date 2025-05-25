@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,8 @@ public class UserController {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private RedisTemplate<String,Object> template;
     @PostMapping("/users")
     @ApiMessage(value = "Create User")
     public ResponseEntity<StringDto> postCreateUser(@Valid @RequestBody User user) {
@@ -60,7 +63,7 @@ public class UserController {
     @GetMapping("/users")
     @ApiMessage(value = "Fetch All Users")
     public ResponseEntity<List<UserDto>> getFetchAllUsers(@Filter Specification<User> spec, Pageable pageable) {
-        List<UserDto> users = userService.fetchAllUsers(spec, pageable);
+        List<UserDto> users = userService.fetchAllUsersNoPage();
         return ResponseEntity.ok().body(users);
     }
 
@@ -93,9 +96,9 @@ public class UserController {
         stringDto.setResult("delete success");
         return ResponseEntity.ok().body(stringDto);
     }
-    @CacheEvict(value = "users", allEntries = true)
     @GetMapping("/clear-cache")
     public ResponseEntity<StringDto> deleteCache(){
+        template.delete("users");
         StringDto stringDto = new StringDto();
         stringDto.setResult("xóa cache thành công");
         return ResponseEntity.ok().body(stringDto);

@@ -1,15 +1,19 @@
 package com.example.demo.service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,11 @@ public class UserService {
     @Autowired
     private SecurityUtil securityUtil;
 
+    @Autowired
+    private RedisTemplate<String,Object> template;
+
+    private Gson gson = new Gson();
+
     public boolean isExistByUsername(String username) {
         return userRepository.existsByName(username);
     }
@@ -38,9 +47,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Cacheable(value = "users",key = "#pageable.pageNumber+'_'+#pageable.pageSize" )
     public List<UserDto> fetchAllUsers(Specification<User> spec, Pageable pageable) {
-        System.out.println("fetch users");
         Page<User> pages = userRepository.findAll(spec, pageable);
         List<User> users = pages.getContent();
 
@@ -71,6 +78,22 @@ public class UserService {
             return userMapper.toUserDto(curUser);
         }
         return null;
+    }
+    public List<UserDto> fetchAllUsersNoPage(){
+        String jsonStr = (String)template.opsForValue().get("users");
+        if(jsonStr == null) {
+            log.info("get data from mysql");
+            List<User> users = userRepository.findAll();
+            List<UserDto> userDtos = users.stream().map(u -> userMapper.toUserDto(u)).collect(Collectors.toList());
+            String json = gson.toJson(userDtos);
+            template.opsForValue().set("users", json);
+            return userDtos;
+        }else{
+            log.info("get data from redis");
+            Type type = new TypeToken<List<UserDto>>(){}.getType();
+            List<UserDto> userDtos = gson.fromJson(jsonStr, type);
+            return userDtos;
+        }
     }
 
     public User fetchUserByName(String name) {
